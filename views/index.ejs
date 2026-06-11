@@ -3,230 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍕 P2P File Share - Send</title>
+    <title>File Share - Send</title>
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            --card-bg: rgba(255, 255, 255, 0.08);
-            --card-border: rgba(255, 255, 255, 0.12);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-primary: #ef4444; /* Pizza Red */
-            --accent-secondary: #f59e0b; /* Cheese Gold */
-            --accent-success: #10b981;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background: var(--bg-gradient);
-            color: var(--text-main);
-            overflow: hidden;
-        }
-
-        .container {
-            background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 3rem 2.5rem;
-            border-radius: 24px;
-            border: 1px solid var(--card-border);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            width: 100%;
-            max-width: 440px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .container:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
-        }
-
-        h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 2rem;
-            line-height: 1.5;
-        }
-
-        .btn {
-            padding: 0.8rem 1.6rem;
-            font-size: 0.95rem;
-            font-weight: 600;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: var(--accent-primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #dc2626;
-            transform: scale(1.02);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-main);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-danger {
-            background: rgba(239, 68, 68, 0.2);
-            color: #f87171;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .btn-danger:hover {
-            background: rgba(239, 68, 68, 0.3);
-        }
-
-        .file-input-wrapper {
-            position: relative;
-            margin: 1.5rem 0;
-            padding: 2rem;
-            border: 2px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
-            transition: border-color 0.2s ease;
-            cursor: pointer;
-        }
-
-        .file-input-wrapper:hover {
-            border-color: var(--accent-primary);
-        }
-
-        .file-input-wrapper input[type="file"] {
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        .file-input-label {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .file-input-label strong {
-            color: var(--text-main);
-        }
-
-        #status {
-            margin-top: 1.5rem;
-            font-weight: 500;
-            font-size: 0.95rem;
-            color: var(--text-muted);
-        }
-
-        #link {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            font-size: 0.9rem;
-            word-break: break-all;
-            display: none;
-        }
-
-        #link a {
-            color: var(--accent-secondary);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        #link a:hover {
-            text-decoration: underline;
-        }
-
-        .restore-banner {
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.25);
-            padding: 1rem;
-            border-radius: 16px;
-            margin-bottom: 1.5rem;
-            text-align: left;
-            font-size: 0.85rem;
-            display: none;
-        }
-
-        .restore-banner p {
-            margin: 0 0 0.8rem 0;
-            color: #fcd34d;
-        }
-
-        .restore-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        #controlPanel {
-            margin-top: 1.5rem;
-            display: none;
-        }
-
-        .btn-pause {
-            background: var(--accent-secondary);
-            color: #0f172a;
-        }
-
-        .btn-pause:hover {
-            background: #d97706;
-        }
-
-        .btn-pause.paused {
-            background: var(--accent-success);
-            color: white;
-        }
-
-        .btn-pause.paused:hover {
-            background: #059669;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/uploader.css?v=<%= Date.now() %>">
 </head>
 <body>
-    <div class="container">
-        <h1>🍕 P2P File Share</h1>
+    <div id="pageLoader" class="page-loader">
+        <div class="loader-content">
+            <div class="nothing-logo-loader"></div>
+            <div class="loader-status">Initializing System</div>
+        </div>
+    </div>
+
+    <div class="container" style="position: relative;">
+        <button id="themeToggleBtn" class="theme-toggle" title="Toggle Theme">
+            <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="5"></circle>
+                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+            </svg>
+        </button>
+        <h1>File Share</h1>
         
         <div id="restoreBanner" class="restore-banner">
             <p id="restoreMsg"></p>
@@ -247,6 +44,14 @@
 
         <div id="status">Initializing WebRTC...</div>
         
+        <div id="streamAnimation" class="stream-animation" style="display: none;">
+            <span class="anim-dot"></span>
+            <span class="anim-dot"></span>
+            <span class="anim-dot"></span>
+            <span class="anim-dot"></span>
+            <span class="anim-dot"></span>
+        </div>
+        
         <div id="linkContainer" style="display: none; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1.5rem; background: rgba(255, 255, 255, 0.05); padding: 1rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08);">
             <div id="link" style="display: block; margin: 0; padding: 0; border: none; background: transparent;"></div>
             <button id="copyBtn" class="btn btn-secondary" style="padding: 0.5rem; width: auto; margin: 0; display: inline-flex; align-items: center; justify-content: center;" title="Copy to clipboard">
@@ -257,290 +62,22 @@
         </div>
 
         <div id="controlPanel">
-            <button id="pausePlayBtn" class="btn btn-pause">Pause Upload</button>
+            <div style="display: flex; gap: 0.5rem; justify-content: center; width: 100%;">
+                <button id="pausePlayBtn" class="btn btn-pause" style="flex: 1;">Pause Upload</button>
+                <button id="cancelTransferBtn" class="btn btn-danger" style="flex: 1;">Cancel Transfer</button>
+            </div>
             <button id="resetBtn" class="btn btn-danger" style="margin-top: 1rem; width: 100%;">Reset Session</button>
         </div>
     </div>
 
     <script>
-        const fileInput = document.getElementById('fileInput');
-        const uploadWrapper = document.getElementById('uploadWrapper');
-        const status = document.getElementById('status');
-        const linkContainer = document.getElementById('linkContainer');
-        const linkDiv = document.getElementById('link');
-        const copyBtn = document.getElementById('copyBtn');
-        const resetBtn = document.getElementById('resetBtn');
-        const restoreBanner = document.getElementById('restoreBanner');
-        const restoreMsg = document.getElementById('restoreMsg');
-        const discardBtn = document.getElementById('discardBtn');
-        const controlPanel = document.getElementById('controlPanel');
-        const pausePlayBtn = document.getElementById('pausePlayBtn');
-        const instructionText = document.getElementById('instructionText');
-
-        let selectedFile = null;
-        let isPaused = false;
-        let activeSlug = null;
-        let activeConnections = new Set();
-
-        const iceServers = [];
-        if ("<%= stunServer %>") iceServers.push({ urls: "<%= stunServer %>" });
-        if ("<%= turnServer %>") {
-            iceServers.push({
-                urls: "<%= turnServer %>",
-                username: "<%= turnUser %>",
-                credential: "<%= turnPass %>"
-            });
-        }
-
-        const peer = new Peer({
-            host: window.location.hostname,
-            port: window.location.port || (window.location.protocol === 'https:' ? 443 : 80),
-            path: '/peerjs',
-            config: { iceServers }
-        });
-
-        peer.on('disconnected', () => {
-            console.log('Disconnected from signaling server. Reconnecting...');
-            peer.reconnect();
-        });
-
-        peer.on('open', (id) => {
-            status.innerText = 'Ready. Select a file.';
-            console.log('My peer ID is: ' + id);
-            checkRestoreSession();
-        });
-
-        function checkRestoreSession() {
-            const saved = localStorage.getItem('active_share');
-            if (saved) {
-                try {
-                    const data = JSON.parse(saved);
-                    activeSlug = data.slug;
-                    restoreMsg.innerHTML = `⚠️ <strong>Resuming Link</strong><br>You have an active sharing link for <strong>${data.name}</strong>. Please select this file again to resume hosting.`;
-                    restoreBanner.style.display = 'block';
-                    instructionText.style.display = 'none';
-                } catch (e) {
-                    localStorage.removeItem('active_share');
-                }
-            }
-        }
-
-        discardBtn.addEventListener('click', () => {
-            localStorage.removeItem('active_share');
-            activeSlug = null;
-            restoreBanner.style.display = 'none';
-            instructionText.style.display = 'block';
-            instructionText.innerHTML = 'Select a file to start sharing. Senders must keep this tab open to allow peers to fetch files.';
-            fileInput.value = '';
-            status.innerText = 'Ready. Select a file.';
-            linkContainer.style.display = 'none';
-            linkDiv.innerHTML = '';
-            controlPanel.style.display = 'none';
-        });
-
-        copyBtn.addEventListener('click', () => {
-            if (!activeSlug) return;
-            const shareLink = `${window.location.origin}/download/${activeSlug}`;
-            navigator.clipboard.writeText(shareLink).then(() => {
-                copyBtn.innerHTML = `
-                    <svg style="width: 20px; height: 20px; color: #10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                `;
-                setTimeout(() => {
-                    copyBtn.innerHTML = `
-                        <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
-                        </svg>
-                    `;
-                }, 2000);
-            });
-        });
-
-        resetBtn.addEventListener('click', async () => {
-            // Send termination packet to all connected downloaders
-            activeConnections.forEach(conn => {
-                try {
-                    conn.send({ type: 'SESSION_TERMINATED' });
-                } catch (e) {}
-                conn.close();
-            });
-            activeConnections.clear();
-
-            if (activeSlug) {
-                try {
-                    await fetch('/api/delete', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ slug: activeSlug })
-                    });
-                } catch (e) {
-                    console.error("Failed to delete room slug:", e);
-                }
-            }
-
-            localStorage.removeItem('active_share');
-            activeSlug = null;
-            selectedFile = null;
-            isPaused = false;
-
-            fileInput.value = '';
-            status.innerText = 'Ready. Select a file.';
-            linkContainer.style.display = 'none';
-            linkDiv.innerHTML = '';
-            controlPanel.style.display = 'none';
-            restoreBanner.style.display = 'none';
-            instructionText.style.display = 'block';
-            instructionText.innerHTML = 'Select a file to start sharing. Senders must keep this tab open to allow peers to fetch files.';
-        });
-
-        fileInput.addEventListener('change', async (e) => {
-            selectedFile = e.target.files[0];
-            if (!selectedFile) return;
-
-            status.innerText = 'Registering link...';
-            
-            const slug = activeSlug || Math.random().toString(36).substring(2, 10);
-            
-            const res = await fetch('/api/create', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ peerId: peer.id, slug })
-            });
-
-            if (res.ok) {
-                activeSlug = slug;
-                localStorage.setItem('active_share', JSON.stringify({ slug, name: selectedFile.name }));
-                const shareLink = `${window.location.origin}/download/${slug}`;
-                linkContainer.style.display = 'flex';
-                linkDiv.innerHTML = `Share link: <a href="${shareLink}" target="_blank">${shareLink}</a>`;
-                status.innerText = 'Link activated. Waiting for connections...';
-                restoreBanner.style.display = 'none';
-                instructionText.style.display = 'block';
-                instructionText.innerHTML = `Currently hosting: <strong>${selectedFile.name}</strong>`;
-                controlPanel.style.display = 'block';
-
-                // Broadcast metadata to any peers that connected before file was chosen
-                activeConnections.forEach(conn => {
-                    conn.send({
-                        type: 'INFO',
-                        name: selectedFile.name,
-                        size: selectedFile.size,
-                        fileType: selectedFile.type
-                    });
-                });
-            } else {
-                status.innerText = 'Error registering link.';
-            }
-        });
-
-        peer.on('connection', (conn) => {
-            console.log('Connected to peer: ' + conn.peer);
-            activeConnections.add(conn);
-            status.innerText = `Connected peers: ${activeConnections.size}`;
-
-            conn.on('data', (data) => {
-                if (data.type === 'REQUEST_INFO') {
-                    if (!selectedFile) {
-                        console.log('Peer requested info, but file is not selected yet.');
-                        return;
-                    }
-                    conn.send({
-                        type: 'INFO',
-                        name: selectedFile.name,
-                        size: selectedFile.size,
-                        fileType: selectedFile.type
-                    });
-                } else if (data.type === 'START_DOWNLOAD') {
-                    if (!selectedFile) return;
-                    sendFile(conn, data.offset || 0);
-                } else if (data.type === 'PAUSE_TRANSFER') {
-                    conn.isTransferPaused = true;
-                } else if (data.type === 'PING') {
-                    conn.send({ type: 'PONG' });
-                }
-            });
-
-            conn.on('close', () => {
-                activeConnections.delete(conn);
-                if (activeConnections.size === 0) {
-                    status.innerText = 'Waiting for connections...';
-                } else {
-                    status.innerText = `Connected peers: ${activeConnections.size}`;
-                }
-            });
-
-            conn.on('error', (err) => {
-                console.error('Connection error:', err);
-                activeConnections.delete(conn);
-            });
-        });
-
-        pausePlayBtn.addEventListener('click', () => {
-            isPaused = !isPaused;
-            if (isPaused) {
-                pausePlayBtn.innerText = 'Resume Upload';
-                pausePlayBtn.classList.add('paused');
-                status.innerText = 'Upload paused.';
-                activeConnections.forEach(conn => {
-                    conn.send({ type: 'HOST_PAUSE' });
-                });
-            } else {
-                pausePlayBtn.innerText = 'Pause Upload';
-                pausePlayBtn.classList.remove('paused');
-                status.innerText = `Connected peers: ${activeConnections.size}`;
-                activeConnections.forEach(conn => {
-                    conn.send({ type: 'HOST_RESUME' });
-                });
-            }
-        });
-
-        async function sendFile(conn, startOffset = 0) {
-            try {
-                conn.isTransferPaused = false;
-                const fileSlice = selectedFile.slice(startOffset);
-                const reader = fileSlice.stream().getReader();
-                let offset = startOffset;
-
-                while (true) {
-                    if (isPaused || conn.isTransferPaused) {
-                        reader.cancel();
-                        break;
-                    }
-
-                    const { done, value } = await reader.read();
-                    if (done) {
-                        conn.send({ type: 'CHUNK', done: true });
-                        status.innerText = 'Transfer complete!';
-                        break;
-                    }
-
-                    // Segment chunk into safe 64KB slices for WebRTC Data Channel
-                    let valueOffset = 0;
-                    while (valueOffset < value.length) {
-                        if (isPaused || conn.isTransferPaused) {
-                            break;
-                        }
-                        const chunkLength = Math.min(64 * 1024, value.length - valueOffset);
-                        const subArray = value.subarray(valueOffset, valueOffset + chunkLength);
-
-                        conn.send({
-                            type: 'CHUNK',
-                            buffer: subArray,
-                            done: false,
-                            offset: offset
-                        });
-                        offset += chunkLength;
-                        valueOffset += chunkLength;
-                        
-                        // Yield to prevent UI/network congestion
-                        await new Promise(r => setTimeout(r, 0));
-                    }
-                }
-            } catch (error) {
-                console.error('Error sending file stream:', error);
-            }
-        }
+        window.config = {
+            stunServer: "<%= stunServer %>",
+            turnServer: "<%= turnServer %>",
+            turnUser: "<%= turnUser %>",
+            turnPass: "<%= turnPass %>"
+        };
     </script>
+    <script src="/js/uploader.js?v=<%= Date.now() %>"></script>
 </body>
 </html>

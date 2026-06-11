@@ -3,532 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍕 P2P File Share - Download</title>
+    <title>File Share - Download</title>
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            --card-bg: rgba(255, 255, 255, 0.08);
-            --card-border: rgba(255, 255, 255, 0.12);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-primary: #ef4444; /* Pizza Red */
-            --accent-secondary: #f59e0b; /* Cheese Gold */
-            --accent-success: #10b981;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background: var(--bg-gradient);
-            color: var(--text-main);
-            overflow: hidden;
-        }
-
-        .container {
-            background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 3rem 2.5rem;
-            border-radius: 24px;
-            border: 1px solid var(--card-border);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            width: 100%;
-            max-width: 440px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .container:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
-        }
-
-        h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        #fileInfo {
-            display: none;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            text-align: left;
-        }
-
-        #fileInfo p {
-            margin: 0.5rem 0;
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            word-break: break-all;
-        }
-
-        #fileInfo p strong {
-            color: var(--text-main);
-        }
-
-        .btn {
-            padding: 0.8rem 1.6rem;
-            font-size: 0.95rem;
-            font-weight: 600;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            width: 100%;
-            margin-top: 1rem;
-        }
-
-        .btn-primary {
-            background: var(--accent-primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #dc2626;
-            transform: scale(1.01);
-        }
-
-        .btn-pause {
-            background: var(--accent-secondary);
-            color: #0f172a;
-        }
-
-        .btn-pause:hover {
-            background: #d97706;
-        }
-
-        .btn-pause.paused {
-            background: var(--accent-success);
-            color: white;
-        }
-
-        .btn-pause.paused:hover {
-            background: #059669;
-        }
-
-        #status {
-            font-weight: 500;
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            margin-top: 1rem;
-            line-height: 1.5;
-        }
-
-        progress {
-            width: 100%;
-            height: 10px;
-            border-radius: 5px;
-            margin-top: 1.5rem;
-            display: none;
-            overflow: hidden;
-            appearance: none;
-            border: none;
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        progress::-webkit-progress-bar {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-        }
-
-        progress::-webkit-progress-value {
-            background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
-            border-radius: 5px;
-        }
-
-        progress::-moz-progress-bar {
-            background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
-            border-radius: 5px;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/downloader.css?v=<%= Date.now() %>">
 </head>
 <body>
-    <div class="container">
-        <h1>🍕 P2P File Share</h1>
+    <div id="pageLoader" class="page-loader">
+        <div class="loader-content">
+            <div class="nothing-logo-loader"></div>
+            <div class="loader-status">Connecting to signaling...</div>
+        </div>
+    </div>
+
+    <div class="container" style="position: relative;">
+        <button id="themeToggleBtn" class="theme-toggle" title="Toggle Theme">
+            <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="5"></circle>
+                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+            </svg>
+        </button>
+        <h1>File Share</h1>
         
         <div id="status">Connecting to uploader...</div>
+        
+        <div id="streamAnimation" class="stream-animation" style="display: none;">
+            <span class="anim-dot"></span>
+            <span class="anim-dot"></span>
+            <span class="anim-dot"></span>
+            <span class="anim-dot"></span>
+            <span class="anim-dot"></span>
+        </div>
         
         <div id="fileInfo">
             <p><strong>File:</strong> <span id="fileName"></span></p>
             <p><strong>Size:</strong> <span id="fileSize"></span></p>
             <button id="downloadBtn" class="btn btn-primary">Download File</button>
-            <button id="pausePlayBtn" class="btn btn-pause" style="display: none;">Pause Download</button>
+            <div id="downloadControls" style="display: none; gap: 0.5rem; width: 100%; margin-top: 1rem;">
+                <button id="pausePlayBtn" class="btn btn-pause" style="flex: 1; margin: 0;">Pause Download</button>
+                <button id="cancelBtn" class="btn btn-danger" style="flex: 1; margin: 0;">Cancel</button>
+            </div>
         </div>
         
         <progress id="progressBar" value="0" max="100"></progress>
     </div>
 
     <script>
-        const status = document.getElementById('status');
-        const fileInfo = document.getElementById('fileInfo');
-        const fileNameSpan = document.getElementById('fileName');
-        const fileSizeSpan = document.getElementById('fileSize');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const pausePlayBtn = document.getElementById('pausePlayBtn');
-        const progressBar = document.getElementById('progressBar');
-
-        const slug = "<%= slug %>";
-        let uploaderPeerId = "<%= uploaderPeerId %>";
-        const iceServers = [];
-        if ("<%= stunServer %>") iceServers.push({ urls: "<%= stunServer %>" });
-        if ("<%= turnServer %>") {
-            iceServers.push({
-                urls: "<%= turnServer %>",
-                username: "<%= turnUser %>",
-                credential: "<%= turnPass %>"
-            });
-        }
-
-        const peer = new Peer({
-            host: window.location.hostname,
-            port: window.location.port || (window.location.protocol === 'https:' ? 443 : 80),
-            path: '/peerjs',
-            config: { iceServers }
-        });
-
-        let conn = null;
-        let fileMetadata = null;
-        let receivedSize = 0;
-        let chunks = [];
-        let isDownloading = false;
-        let isPaused = false;
-        let reconnectTimeout = null;
-        let lastActiveTime = Date.now();
-        let heartbeatInterval = null;
-
-        const dbName = 'P2PFileShareDB';
-        const storeName = 'file_chunks';
-        let db = null;
-
-        function initDB() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open(dbName, 1);
-                request.onupgradeneeded = (e) => {
-                    const database = e.target.result;
-                    if (!database.objectStoreNames.contains(storeName)) {
-                        const store = database.createObjectStore(storeName, { keyPath: 'slug_offset' });
-                        store.createIndex('slug', 'slug', { unique: false });
-                    }
-                };
-                request.onsuccess = (e) => {
-                    db = e.target.result;
-                    resolve(db);
-                };
-                request.onerror = (e) => reject(e.target.error);
-            });
-        }
-
-        function storeChunk(slug, offset, buffer) {
-            return new Promise((resolve, reject) => {
-                if (!db) return reject(new Error("DB not initialized"));
-                const transaction = db.transaction([storeName], 'readwrite');
-                const store = transaction.objectStore(storeName);
-                const request = store.put({
-                    slug_offset: `${slug}:${offset}`,
-                    slug: slug,
-                    offset: offset,
-                    data: buffer
-                });
-                request.onsuccess = () => resolve();
-                request.onerror = (e) => reject(e.target.error);
-            });
-        }
-
-        function getStoredProgress(slug) {
-            return new Promise((resolve, reject) => {
-                if (!db) return reject(new Error("DB not initialized"));
-                const transaction = db.transaction([storeName], 'readonly');
-                const store = transaction.objectStore(storeName);
-                const index = store.index('slug');
-                const request = index.getAll(slug);
-                request.onsuccess = (e) => {
-                    const records = e.target.result;
-                    records.sort((a, b) => a.offset - b.offset);
-                    resolve(records);
-                };
-                request.onerror = (e) => reject(e.target.error);
-            });
-        }
-
-        function clearStoredChunks(slug) {
-            return new Promise((resolve, reject) => {
-                if (!db) return resolve(); // DB might not be initialized yet
-                const transaction = db.transaction([storeName], 'readwrite');
-                const store = transaction.objectStore(storeName);
-                const index = store.index('slug');
-                const request = index.openCursor(slug);
-                request.onsuccess = (e) => {
-                    const cursor = e.target.result;
-                    if (cursor) {
-                        store.delete(cursor.primaryKey);
-                        cursor.continue();
-                    } else {
-                        resolve();
-                    }
-                };
-                request.onerror = (e) => reject(e.target.error);
-            });
-        }
-
-        peer.on('disconnected', () => {
-            console.log('Disconnected from signaling server. Reconnecting...');
-            peer.reconnect();
-        });
-
-        peer.on('open', async (id) => {
-            console.log('My peer ID is: ' + id);
-            try {
-                // Initialize local database
-                await initDB();
-                
-                // Check if we already have chunks stored for this slug
-                const records = await getStoredProgress(slug);
-                let size = 0;
-                for (const r of records) {
-                    const len = r.data.byteLength !== undefined ? r.data.byteLength : (r.data.length || 0);
-                    if (r.offset === size) {
-                        size += len;
-                    } else {
-                        break; // Stop at first gap
-                    }
-                }
-                receivedSize = size;
-                
-                if (receivedSize > 0) {
-                    // Update UI immediately to show existing progress
-                    progressBar.style.display = 'block';
-                    status.innerText = `Found partial download progress. Ready to resume at ${(receivedSize / (1024 * 1024)).toFixed(2)} MB.`;
-                }
-            } catch (err) {
-                console.error("IndexedDB initialization error:", err);
-            }
-            connectToUploader();
-        });
-
-        peer.on('error', (err) => {
-            console.error('PeerJS error:', err);
-            if (err.type === 'peer-unavailable') {
-                status.innerText = 'Uploader is offline. Retrying...';
-                handleDisconnect();
-            }
-        });
-
-        function startHeartbeat() {
-            stopHeartbeat();
-            lastActiveTime = Date.now();
-            heartbeatInterval = setInterval(() => {
-                if (!isPaused && isDownloading) {
-                    if (Date.now() - lastActiveTime > 7000) {
-                        console.log("Heartbeat timeout. Assuming connection dead.");
-                        handleDisconnect();
-                    } else {
-                        if (conn && conn.open) {
-                            conn.send({ type: 'PING' });
-                        }
-                    }
-                }
-            }, 3000);
-        }
-
-        function stopHeartbeat() {
-            clearInterval(heartbeatInterval);
-        }
-
-        async function connectToUploader() {
-            if (conn) {
-                conn.close();
-            }
-            stopHeartbeat();
-
-            status.innerText = 'Resolving uploader address...';
-            try {
-                const res = await fetch(`/api/peer/${slug}`);
-                if (res.status === 404) {
-                    status.innerText = '⚠️ The sharing session has been terminated by the uploader.';
-                    isDownloading = false;
-                    progressBar.style.display = 'none';
-                    fileInfo.style.display = 'none';
-                    stopHeartbeat();
-                    clearTimeout(reconnectTimeout);
-                    return;
-                }
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.peerId) {
-                        uploaderPeerId = data.peerId;
-                    }
-                }
-            } catch (e) {
-                console.error("Could not resolve latest peer ID:", e);
-            }
-            
-            status.innerText = 'Connecting to uploader...';
-            conn = peer.connect(uploaderPeerId, { reliable: true });
-
-            conn.on('open', () => {
-                clearTimeout(reconnectTimeout);
-                if (isDownloading) {
-                    status.innerText = 'Reconnected! Resuming download...';
-                    startHeartbeat();
-                    if (!isPaused) {
-                        conn.send({ type: 'START_DOWNLOAD', offset: receivedSize });
-                    }
-                } else {
-                    if (receivedSize > 0) {
-                        status.innerText = `Connected! Ready to resume download at ${(receivedSize / (1024 * 1024)).toFixed(2)} MB.`;
-                    } else {
-                        status.innerText = 'Connected! Requesting file info...';
-                    }
-                    conn.send({ type: 'REQUEST_INFO' });
-                }
-            });
-
-            conn.on('data', (data) => {
-                lastActiveTime = Date.now();
-                if (data.type === 'INFO') {
-                    fileMetadata = data;
-                    fileNameSpan.innerText = data.name;
-                    fileSizeSpan.innerText = (data.size / (1024 * 1024)).toFixed(2) + ' MB';
-                    fileInfo.style.display = 'block';
-                    if (receivedSize > 0) {
-                        const progress = (receivedSize / fileMetadata.size) * 100;
-                        progressBar.value = progress;
-                        downloadBtn.innerText = 'Resume Download';
-                    }
-                } else if (data.type === 'CHUNK') {
-                    handleChunk(data);
-                } else if (data.type === 'HOST_PAUSE') {
-                    status.innerText = 'Upload paused by host.';
-                } else if (data.type === 'HOST_RESUME') {
-                    status.innerText = 'Downloading...';
-                    if (isDownloading && !isPaused) {
-                        conn.send({ type: 'START_DOWNLOAD', offset: receivedSize });
-                    }
-                } else if (data.type === 'SESSION_TERMINATED') {
-                    status.innerText = '⚠️ The sharing session has been terminated by the uploader.';
-                    isDownloading = false;
-                    progressBar.style.display = 'none';
-                    fileInfo.style.display = 'none';
-                    stopHeartbeat();
-                    clearTimeout(reconnectTimeout);
-                    if (conn) conn.close();
-                }
-            });
-
-            conn.on('close', () => {
-                handleDisconnect();
-            });
-
-            conn.on('error', (err) => {
-                console.error('Data channel connection error:', err);
-                handleDisconnect();
-            });
-        }
-
-        function handleDisconnect() {
-            stopHeartbeat();
-            if (!isDownloading) {
-                status.innerText = 'Connection to uploader lost.';
-                return;
-            }
-            status.innerText = `Connection lost. Reconnecting... (Received: ${(receivedSize / (1024 * 1024)).toFixed(2)} MB)`;
-            
-            clearTimeout(reconnectTimeout);
-            reconnectTimeout = setTimeout(() => {
-                connectToUploader();
-            }, 3000);
-        }
-
-        downloadBtn.addEventListener('click', () => {
-            status.innerText = 'Downloading...';
-            downloadBtn.style.display = 'none';
-            pausePlayBtn.style.display = 'inline-flex';
-            progressBar.style.display = 'block';
-            isDownloading = true;
-            startHeartbeat();
-            conn.send({ type: 'START_DOWNLOAD', offset: receivedSize });
-        });
-
-        pausePlayBtn.addEventListener('click', () => {
-            isPaused = !isPaused;
-            if (isPaused) {
-                pausePlayBtn.innerText = 'Resume Download';
-                pausePlayBtn.classList.add('paused');
-                status.innerText = 'Download paused.';
-                conn.send({ type: 'PAUSE_TRANSFER' });
-                stopHeartbeat();
-            } else {
-                pausePlayBtn.innerText = 'Pause Download';
-                pausePlayBtn.classList.remove('paused');
-                status.innerText = 'Downloading...';
-                startHeartbeat();
-                conn.send({ type: 'START_DOWNLOAD', offset: receivedSize });
-            }
-        });
-
-        async function handleChunk(data) {
-            if (data.done) {
-                status.innerText = 'Download complete! Assembling...';
-                stopHeartbeat();
-                try {
-                    // Fetch all chunks from IndexedDB in sorted order
-                    const records = await getStoredProgress(slug);
-                    const blob = new Blob(records.map(r => r.data), { type: fileMetadata.fileType });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = fileMetadata.name;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                    status.innerText = 'File saved.';
-                    
-                    // Clear storage to free space
-                    await clearStoredChunks(slug);
-                } catch (err) {
-                    console.error("Assembly or cleanup failed:", err);
-                    status.innerText = 'File assembly failed.';
-                }
-                progressBar.style.display = 'none';
-                pausePlayBtn.style.display = 'none';
-                isDownloading = false;
-                return;
-            }
-
-            if (data.offset === receivedSize) {
-                const chunkLength = data.buffer.byteLength !== undefined ? data.buffer.byteLength : (data.buffer.length || 0);
-                try {
-                    // Cache chunk into IndexedDB
-                    await storeChunk(slug, data.offset, data.buffer);
-                    receivedSize += chunkLength;
-                    const progress = (receivedSize / fileMetadata.size) * 100;
-                    progressBar.value = progress;
-                } catch (err) {
-                    console.error("Failed to cache chunk:", err);
-                }
-            }
-        }
+        window.config = {
+            slug: "<%= slug %>",
+            uploaderPeerId: "<%= uploaderPeerId %>",
+            stunServer: "<%= stunServer %>",
+            turnServer: "<%= turnServer %>",
+            turnUser: "<%= turnUser %>",
+            turnPass: "<%= turnPass %>"
+        };
     </script>
+    <script src="/js/downloader.js?v=<%= Date.now() %>"></script>
 </body>
 </html>
